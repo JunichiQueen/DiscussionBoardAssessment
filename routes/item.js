@@ -93,11 +93,8 @@ router.delete("/delete", (req, res) => {
     let delUser = req.body.delUser;
     errors = {};
     const email = req.body.email;
-    console.log(delUser);
 
     Item.findOne({ username: req.body.delUser}).then(Item =>{
-        console.log("lkjblkj");
-
         bcrypt.compare(email, Item.email).then(isMatch => {
             if (isMatch) {
                 Item.deleteOne({ username: delUser }).then(({ ok, n}) => {
