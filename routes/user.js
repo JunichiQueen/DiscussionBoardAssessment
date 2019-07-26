@@ -30,24 +30,39 @@ router.post("/create", (req, res) => {
         return res.status(400).json({ message: "Passwords do not match" });
     }
 
-    let newUser = new User({
-        username: req.body.username,
-        email: req.body.email,
-        password: req.body.password
-    });
-
-    payload = {};
-
-    bcrypt.genSalt(10, (err, salt) => {
-        bcrypt.hash(req.body.password, salt, (err, hash) => {
-            if (err) throw err;
-            payload.value = hash;
-            newUser.password = payload.value;
-            newUser.save().then(() => res.status(200).json({ message: "User Created"}))
-            .catch((err) => {console.log(err), res.status(404).json({ message: "Creation Failed"})});
+    User.findOne({ username: req.body.username }).then(User => {
+        if (User.username == req.body.username){
+            return res.status(400).json({ message: "Username already exists"});
+        
+    }}).catch(() => {
+        User.findOne({ email: req.body.email }).then(User2 => {
+            if (User2.email == req.body.email){
+                return res.status(400).json({ message: "Email already exists"});
+            }
+        }).catch(() => {
+            let newUser = new User({
+                username: req.body.username,
+                email: req.body.email,
+                password: req.body.password
+            });
+            payload = {};
+        
+            bcrypt.genSalt(10, (err, salt) => {
+                bcrypt.hash(req.body.password, salt, (err, hash) => {
+                    if (err) throw err;
+                    payload.value = hash;
+                    newUser.password = payload.value;
+                    newUser.save().then(() => res.status(200).json({ message: "User Created"}))
+                    .catch((err) => {console.log(err), res.status(404).json({ message: "Creation Failed"})});
+                });
+            });
         });
     });
+
     
+
+
+
 });
 
 router.post("/login", (req, res) => {
