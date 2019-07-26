@@ -58,11 +58,6 @@ router.post("/create", (req, res) => {
             });
         });
     });
-
-    
-
-
-
 });
 
 router.post("/login", (req, res) => {
@@ -80,8 +75,14 @@ router.post("/login", (req, res) => {
     }).catch(err => console.log(err));
 })
 
-
-
+//Needs additional security considerations
+router.put("/update", (req, res) => {
+    User.replaceOne({username: req.body.username},
+    {email: req.body.replaceemail, content: req.body.replacepassword}
+    ).then(({ok, n}) => {
+        res.json({ noItemL: "updated" });
+    }).catch(err => res.status(404).json({ invalidUser: "There is no such username" }));
+});
 
 
 

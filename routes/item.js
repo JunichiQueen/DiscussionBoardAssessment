@@ -5,7 +5,7 @@ const Item = require("../models/itemSchema.js");
 const Validator = require("../validator/validateItem.js");
 const bcrypt = require("bcrypt");
 
-
+//Post Array
 let itemArray = [];
 router.post("/addItem", (req, res) => {
     let newItem = {
@@ -17,6 +17,7 @@ router.post("/addItem", (req, res) => {
 });
 
 router.post("/add", (req, res) => {
+    //curl -d '{"username":"req.body.loginusername", "password":"req.body.loginpassword"}' -H "Content-Type: application/json" -X POST "http://localhost:5000/user/login";
     const {errors, isValid} = Validator(req.body);
 
     if (!isValid) {
@@ -41,11 +42,9 @@ router.post("/add", (req, res) => {
             
         });
     });
-
-    
-
 });
 
+//Get Array
 router.get("/", (req, res) => {
     res.send(itemArray);
 });
@@ -63,7 +62,7 @@ router.get("/all", (req, res) => {
       .catch(err => res.status(404).json({ noItems: "There are no items" }));
 });
   
-
+//Put Array
 router.put("/updateItem/:index", (req, res) => {
     let index = req.params.index;
     let newItem = {
@@ -83,6 +82,7 @@ router.put("/update", (req, res) => {
     }).catch(err => res.status(404).json({ invalidUser: "There is no such username" }));
 });
 
+//Delete Array
 router.delete("/deleteItem/:index", (req, res) => {
     let index = req.params.index;
     _.pullAt(itemArray, index);
@@ -110,9 +110,6 @@ router.delete("/delete", (req, res) => {
         });
 
     }).catch(err => res.json(err));
-
-
-
     
 });
 
