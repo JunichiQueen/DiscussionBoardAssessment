@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/userschema');
-const ValidateEmail = require('../validator/validator.js');
+const ValidateEmail = require('../validator/validateUser.js');
 const bcrypt = require('bcrypt');
 
 
@@ -58,11 +58,6 @@ router.post("/create", (req, res) => {
             });
         });
     });
-
-    
-
-
-
 });
 
 router.post("/login", (req, res) => {
@@ -71,7 +66,7 @@ router.post("/login", (req, res) => {
         bcrypt.compare(req.body.password, User.password).then(isMatch => {
             if (isMatch) {
                 console.log({ login: "Login Successful"});
-                return res.status(400).json({ message: "Login Successful"});
+                return res.status(200).json({ message: "Login Successful"});
             } else {
                 errors.value = "Incorrect Password";
                 return res.status(400).json(errors);
@@ -80,8 +75,14 @@ router.post("/login", (req, res) => {
     }).catch(err => console.log(err));
 })
 
-
-
+//Needs additional security considerations
+router.put("/update", (req, res) => {
+    User.replaceOne({username: req.body.username},
+    {email: req.body.replaceemail, content: req.body.replacepassword}
+    ).then(({ok, n}) => {
+        res.json({ noItemL: "updated" });
+    }).catch(err => res.status(404).json({ invalidUser: "There is no such username" }));
+});
 
 
 
