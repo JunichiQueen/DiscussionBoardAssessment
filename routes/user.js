@@ -7,7 +7,7 @@ const bcrypt = require('bcrypt');
 
 router.get("/all", (req, res) => {
     const errors = {};
-    User.find()
+    User.find({}, ' -password')
     .then(users => {
         if (!users){
             errors.noUsers = "There are no users";
@@ -23,6 +23,11 @@ router.post("/create", (req, res) => {
     const {errors, IsValid} = ValidateEmail(req.body);
     if (!IsValid) {
         return res.status(404).json(errors);
+    }
+
+    let password2 = req.body.password2;
+    if (password2 != req.body.password){
+        return res.status(400).json({ message: "Passwords do not match" });
     }
 
     let newUser = new User({
@@ -44,6 +49,26 @@ router.post("/create", (req, res) => {
     });
     
 });
+
+router.post("/login", (req, res) => {
+    errors = {};
+    User.findOne( {username: req.body.username }).then(User => {
+        bcrypt.compare(req.body.password, User.password).then(isMatch => {
+            if (isMatch) {
+                console.log({ login: "Login Successful"});
+                return res.status(400).json({ message: "Login Successful"});
+            } else {
+                errors.value = "Incorrect Password";
+                return res.status(400).json(errors);
+            }
+        }).catch(err => console.log(err));
+    }).catch(err => console.log(err));
+})
+
+
+
+
+
 
 router.delete("/delete", (req, res) => {
     let delUsername = req.body.delUsername;
