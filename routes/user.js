@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/userschema');
-const ValidateEmail = require('../validator/validator.js');
+const ValidateEmail = require('../validator/validateUser.js');
 const bcrypt = require('bcrypt');
 
 
