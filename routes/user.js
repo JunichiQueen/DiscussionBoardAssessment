@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/userschema');
+const ValidateEmail = require('../validator/validator.js');
 const bcrypt = require('bcrypt');
 
 
@@ -18,20 +19,12 @@ router.get("/all", (req, res) => {
 });
 
 
-// payload = {};
-// bcrypt.genSalt(10, (err, salt) => {
-//     bcrypt.hash(req.body.email, salt, (err, hash) => {
-//         if (err) throw err;
-//         payload.value = hash;
-//         newdoc.email = payload.value;
-//         newdoc.save().then(() => res.status(200).json({ message:"Item created" }))
-//         .catch(err => res.status(404).json({ noItems: "There are no items" }));
-        
-//     });
-// });
-
-
 router.post("/create", (req, res) => {
+    const {errors, IsValid} = ValidateEmail(req.body);
+    if (!IsValid) {
+        return res.status(404).json(errors);
+    }
+
     let newUser = new User({
         username: req.body.username,
         email: req.body.email,
