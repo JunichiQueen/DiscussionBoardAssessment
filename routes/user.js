@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/userschema');
+const bcrypt = require('bcrypt');
 
 
 router.get("/all", (req, res) => {
@@ -17,14 +18,38 @@ router.get("/all", (req, res) => {
 });
 
 
+// payload = {};
+// bcrypt.genSalt(10, (err, salt) => {
+//     bcrypt.hash(req.body.email, salt, (err, hash) => {
+//         if (err) throw err;
+//         payload.value = hash;
+//         newdoc.email = payload.value;
+//         newdoc.save().then(() => res.status(200).json({ message:"Item created" }))
+//         .catch(err => res.status(404).json({ noItems: "There are no items" }));
+        
+//     });
+// });
+
+
 router.post("/create", (req, res) => {
     let newUser = new User({
         username: req.body.username,
         email: req.body.email,
         password: req.body.password
     });
-    newUser.save().then(() => res.status(200).json({ message: "User Created"}))
-    .catch((err) => {console.log(err), res.status(404).json({ message: "Creation Failed"})});
+
+    payload = {};
+
+    bcrypt.genSalt(10, (err, salt) => {
+        bcrypt.hash(req.body.password, salt, (err, hash) => {
+            if (err) throw err;
+            payload.value = hash;
+            newUser.password = payload.value;
+            newUser.save().then(() => res.status(200).json({ message: "User Created"}))
+            .catch((err) => {console.log(err), res.status(404).json({ message: "Creation Failed"})});
+        });
+    });
+    
 });
 
 router.delete("/delete", (req, res) => {
